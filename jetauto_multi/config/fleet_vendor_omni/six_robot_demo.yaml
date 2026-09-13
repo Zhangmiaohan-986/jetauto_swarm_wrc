@@ -1,0 +1,166 @@
+map_frame: robot_1/map
+robot_order: [robot_1, robot_2, robot_3, robot_4, robot_5, robot_6]
+
+# Measured floor marks on robot_1_obstacle_20260901_v3.
+robots:
+  robot_1: {initial_x: -0.139, initial_y: 0.109, initial_yaw_deg: -3.21}
+  robot_2: {initial_x: -0.043, initial_y: 0.887, initial_yaw_deg: -3.21}
+  robot_3: {initial_x: -0.190, initial_y: -0.625, initial_yaw_deg: -3.21}
+  robot_4: {initial_x: -1.014, initial_y: 0.222, initial_yaw_deg: -3.21}
+  robot_5: {initial_x: -0.967, initial_y: 0.940, initial_yaw_deg: -3.21}
+  robot_6: {initial_x: -1.114, initial_y: -0.612, initial_yaw_deg: -3.21}
+
+checkpoint:
+  settle_stable_duration: 0.8
+  settle_timeout: 4.0
+  cmd_linear_threshold: 0.005
+  cmd_angular_threshold: 0.01
+  odom_linear_threshold: 0.01
+  odom_angular_threshold: 0.02
+  imu_wz_threshold: 0.02
+  sensor_max_age: 0.8
+  transition_sensor_recovery_timeout: 3.5
+  amcl_samples_required: 1
+  amcl_samples_preferred: 2
+  nomotion_max_requests: 3
+  nomotion_request_interval: 0.35
+  amcl_callback_timeout: 1.0
+  checkpoint_timeout: 6.0
+  sample_position_spread: 0.030
+  sample_yaw_spread_deg: 2.0
+  expected_position_error: 0.10
+  expected_yaw_error_deg: 5.0
+  tf_settle_time: 0.30
+  tf_position_error: 0.040
+  tf_yaw_error_deg: 2.0
+  initial_position_error: 0.15
+  initial_yaw_error_deg: 8.0
+  yaw_excursion_guard_deg: 15.0
+  yaw_excursion_guard_hold: 0.5
+  goal_teammate_min_distance: 0.50
+  runtime_teammate_min_distance: 0.42
+  preflight_cache_max_age: 5.0
+
+required_parameter_suffixes:
+  amcl/resample_interval: 2
+  amcl/odom_model_type: omni
+  move_base/base_local_planner: teb_local_planner/TebLocalPlannerROS
+  move_base/recovery_behavior_enabled: false
+  move_base/GlobalPlanner/orientation_mode: 0
+  move_base/TebLocalPlannerROS/yaw_goal_tolerance: 0.05
+  move_base/TebLocalPlannerROS/global_plan_overwrite_orientation: false
+  move_base/TebLocalPlannerROS/allow_init_with_backwards_motion: true
+  move_base/TebLocalPlannerROS/weight_kinematics_forward_drive: 0.0
+  move_base/TebLocalPlannerROS/weight_viapoint: 10
+  move_base/TebLocalPlannerROS/footprint_model/type: polygon
+
+formation_line:
+  speed: 0.08
+  min_speed: 0.025
+  max_lateral: 0.020
+  max_angular: 0.08
+  acc_lim_x: 0.10
+  acc_lim_y: 0.10
+  acc_lim_theta: 0.15
+  sync_gain: 1.0
+  cross_gain: 0.8
+  yaw_gain: 1.2
+  slow_distance: 0.18
+  position_tolerance: 0.05
+  cross_tolerance: 0.05
+  yaw_tolerance_deg: 5.0
+  stable_duration: 0.8
+  sensor_recovery_timeout: 3.5
+  loop_hz: 20.0
+
+# Each call to start_next releases only the listed robots. Both costmaps mask
+# known teammates; the supervisor enforces a fleet-wide 0.42 m stop distance.
+# Transition stages still open physical lanes before crossing routes run.
+stages:
+  - name: ROW_FORWARD
+    mode: formation_line
+    timeout: 85.0
+    goals:
+      robot_1: {x: 1.085, y: 0.109, yaw_deg: 0.0}
+      robot_2: {x: 1.085, y: 0.887, yaw_deg: 0.0}
+      robot_3: {x: 1.085, y: -0.625, yaw_deg: 0.0}
+      robot_4: {x: 0.185, y: 0.222, yaw_deg: 0.0}
+      robot_5: {x: 0.185, y: 0.940, yaw_deg: 0.0}
+      robot_6: {x: 0.185, y: -0.612, yaw_deg: 0.0}
+
+  # robot_4 must clear the centre lane before robot_1 reverses. Copying the
+  # three-car order directly would leave only about 0.16 m between bodies.
+  - name: COLUMN_R4_CLEAR
+    timeout: 45.0
+    goals:
+      robot_4: {x: -0.100, y: 0.222, yaw_deg: 0.0}
+
+  - name: COLUMN_R1_CLEAR
+    timeout: 45.0
+    goals:
+      robot_1: {x: 0.650, y: 0.109, yaw_deg: 0.0}
+
+  - name: COLUMN_FRONT_PAIR
+    timeout: 75.0
+    goals:
+      robot_2: {x: 1.400, y: 0.350, yaw_deg: 0.0}
+      robot_3: {x: 1.400, y: -0.200, yaw_deg: 0.0}
+
+  - name: COLUMN_R1_ALIGN
+    timeout: 45.0
+    goals:
+      robot_1: {x: 0.650, y: 0.350, yaw_deg: 0.0}
+
+  - name: COLUMN_R4_ALIGN
+    timeout: 55.0
+    goals:
+      robot_4: {x: 0.650, y: -0.200, yaw_deg: 0.0}
+
+  - name: COLUMN_REAR_PAIR
+    timeout: 65.0
+    goals:
+      robot_5: {x: -0.100, y: 0.350, yaw_deg: 0.0}
+      robot_6: {x: -0.100, y: -0.200, yaw_deg: 0.0}
+
+  # Shared progress keeps all three rows at 0.75 m longitudinal spacing.
+  - name: COLUMN_FORWARD
+    mode: formation_line
+    timeout: 105.0
+    goals:
+      robot_1: {x: 2.000, y: 0.350, yaw_deg: 0.0}
+      robot_2: {x: 2.750, y: 0.350, yaw_deg: 0.0}
+      robot_3: {x: 2.750, y: -0.200, yaw_deg: 0.0}
+      robot_4: {x: 2.000, y: -0.200, yaw_deg: 0.0}
+      robot_5: {x: 1.250, y: 0.350, yaw_deg: 0.0}
+      robot_6: {x: 1.250, y: -0.200, yaw_deg: 0.0}
+
+  - name: TRIANGLE_LEADERS_OUT
+    timeout: 125.0
+    goals:
+      robot_2: {x: 3.600, y: 1.550, yaw_deg: 0.0}
+      robot_3: {x: 3.620, y: -1.825, yaw_deg: 0.0}
+
+  - name: TRIANGLE_OUTER_FOLLOWERS
+    timeout: 105.0
+    goals:
+      robot_1: {x: 2.750, y: 1.850, yaw_deg: 0.0}
+      robot_4: {x: 2.770, y: -2.100, yaw_deg: 0.0}
+
+  # These routes intersect the preceding follower routes, so they run only
+  # after the outer followers have stopped and passed localization checks.
+  - name: TRIANGLE_INNER_FOLLOWERS
+    timeout: 105.0
+    goals:
+      robot_5: {x: 2.750, y: 1.250, yaw_deg: 0.0}
+      robot_6: {x: 2.770, y: -1.525, yaw_deg: 0.0}
+
+  - name: TRIANGLE_FORWARD
+    mode: formation_line
+    timeout: 125.0
+    goals:
+      robot_1: {x: 4.150, y: 1.850, yaw_deg: 0.0}
+      robot_2: {x: 5.000, y: 1.550, yaw_deg: 0.0}
+      robot_3: {x: 5.000, y: -1.825, yaw_deg: 0.0}
+      robot_4: {x: 4.150, y: -2.100, yaw_deg: 0.0}
+      robot_5: {x: 4.150, y: 1.250, yaw_deg: 0.0}
+      robot_6: {x: 4.150, y: -1.525, yaw_deg: 0.0}

@@ -3,7 +3,7 @@
     <arg name="master_name" default="$(env ROBOT_MASTER)"/>
     <arg name="robot_name"  default="$(env ROBOT_HOST)"/>
     <arg name="app"         default="false"/>
-    <arg name="drive_type"  default="diff-corrected"/>
+    <arg name="drive_type"  default="omni"/>
 
     <!--topic和frame设置-->
     <arg      if="$(eval robot_name == '/')"    name="topic_prefix" default=""/>
@@ -13,7 +13,7 @@
     <arg      if="$(eval robot_name == '/')"    name="tf_prefix"    default=""/>
     <arg unless="$(eval robot_name == '/')"     name="tf_prefix"    default="$(arg robot_name)"/>
 
-    <arg name="cmd_vel_topic"       default="$(arg topic_prefix)/jetauto_controller/cmd_vel"/>
+    <arg name="cmd_vel_topic"       default="$(arg topic_prefix)/nav/cmd_vel"/>
     <arg name="scan_topic"          default="$(arg topic_prefix)/scan"/>
     <arg     if="$(eval robot_name == master_name)" name="map_topic" default="$(arg topic_prefix)/map"/>
     <arg unless="$(eval robot_name == master_name)" name="map_topic" default="/$(arg master_name)/map"/>

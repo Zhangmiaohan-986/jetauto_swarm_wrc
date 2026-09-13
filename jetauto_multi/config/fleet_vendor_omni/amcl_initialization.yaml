@@ -1,0 +1,10 @@
+# Fresh experiment uncertainty; AMCL defaults (m^2, m^2, rad^2).
+# Always overwrite covariance saved by a previous AMCL run. Position/yaw
+# still come from the selected mission; do not copy saved initial_pose here.
+initial_cov_xx: 0.25
+initial_cov_yy: 0.25
+initial_cov_aa: 0.06853891945200942
+# Each mission supplies its own initial pose. Avoid six synchronous remote
+# parameter writes in laserReceived every 2 s on the wireless ROS master.
+# Negative disables periodic saving; zero is invalid (AMCL computes 1/rate).
+save_pose_rate: -1.0

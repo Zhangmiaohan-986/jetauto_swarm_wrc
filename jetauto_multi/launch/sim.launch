@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<launch>
+  <arg name="profile" default="$(find jetauto_multi)/config/fleet_vendor_omni/six_robot_profile.yaml"/>
+  <arg name="motion_enabled" default="false"/>
+  <arg name="allow_full_run" default="false"/>
+  <arg name="record_data" default="true"/>
+  <arg name="gui" default="true"/>
+  <arg name="map_yaml" default=""/>
+  <arg name="excluded_robots" default=""/>
+  <arg name="slot_amcl_verify_enabled" default="false"/>
+  <param name="/fleet_vendor_omni/slot_amcl_verify_enabled"
+         value="$(arg slot_amcl_verify_enabled)" type="bool"/>
+  <node pkg="jetauto_multi" type="launch_fleet.py" name="fleet_profile_launcher" output="screen" required="true">
+    <param name="profile" value="$(arg profile)"/>
+    <param name="simulation" value="true"/>
+    <param name="motion_enabled" value="$(arg motion_enabled)"/>
+    <param name="allow_full_run" value="$(arg allow_full_run)"/>
+    <param name="record_data" value="$(arg record_data)"/>
+    <param name="gui" value="$(arg gui)"/>
+    <param name="map_yaml" value="$(arg map_yaml)"/>
+    <param name="excluded_robots" value="$(arg excluded_robots)"/>
+  </node>
+</launch>

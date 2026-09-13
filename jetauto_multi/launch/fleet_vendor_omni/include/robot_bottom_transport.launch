@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<launch>
+  <!-- Transport only: factory nodes still own the same frames and algorithms. -->
+  <arg name="robot_name"/>
+  <arg name="fuse_imu_yaw" default="false"/>
+  <remap from="/tf" to="/$(arg robot_name)/tf"/>
+  <remap from="/tf_static" to="/$(arg robot_name)/tf_static"/>
+  <include file="$(find jetauto_slam)/launch/include/jetauto_robot.launch">
+    <arg name="sim" value="false"/>
+    <arg name="app" value="false"/>
+    <arg name="use_joy" value="false"/>
+    <arg name="set_pose" value="false"/>
+    <arg name="fuse_imu_yaw" value="$(arg fuse_imu_yaw)"/>
+  </include>
+</launch>

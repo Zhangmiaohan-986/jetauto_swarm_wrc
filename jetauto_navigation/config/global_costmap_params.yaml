@@ -7,9 +7,11 @@ global_costmap:
   transform_tolerance: 1
   plugins:
     - {name: static_layer,    type: "costmap_2d::StaticLayer"}
-    - {name: obstacle_layer,  type: "costmap_2d::ObstacleLayer"}
+    # obstacle_layer 已移除：全局规划只信静态地图，
+    # 不再把队友激光标记成障碍（否则编队把队友当障碍，
+    # 起点/目标常被膨胀区卡死导致 NO PATH）。
     - {name: inflation_layer, type: "costmap_2d::InflationLayer"}
   inflation_layer:
     enabled: true
-    inflation_radius: 0.25 # footprint(或者robot_radius)与 inflation_radius 共同决定全局路径规划，其中footprint决定路径绝对不可以靠近的障碍物范围，inflation_radius决定路径不建议进入的障碍物范围。所以 inflation_radiu必须大于小车外形外接半径
+    inflation_radius: 0.15 # 收窄膨胀：通道口目标点的可用窗口只有约 0.25m，膨胀过大会把它挤进障碍区，其中footprint决定路径绝对不可以靠近的障碍物范围，inflation_radius决定路径不建议进入的障碍物范围。所以 inflation_radiu必须大于小车外形外接半径
     cost_scaling_factor: 10.0 # 代价比例系数，越大则代价值越小, cost_scaling_factor越大占用的计算量越小(cost ratio factor. The greater it is, the less the cost is)

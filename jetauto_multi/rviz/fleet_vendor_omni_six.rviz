@@ -1,0 +1,263 @@
+Panels:
+  - Class: rviz/Displays
+    Name: Displays
+  - Class: rviz/Views
+    Name: Views
+Visualization Manager:
+  Class: ""
+  Displays:
+    - Class: rviz/Grid
+      Name: Grid
+      Enabled: true
+      Alpha: 0.5
+      Cell Size: 0.5
+      Plane: XY
+      Plane Cell Count: 20
+      Reference Frame: <Fixed Frame>
+    - Class: rviz/Map
+      Name: Map
+      Enabled: true
+      Alpha: 0.72
+      Topic: /robot_1/map
+      Color Scheme: map
+      Draw Behind: true
+    - Class: rviz/RobotModel
+      Name: Robot 1
+      Enabled: true
+      Alpha: 1
+      Collision Enabled: false
+      Robot Description: /robot_1/robot_description
+      TF Prefix: robot_1
+      Update Interval: 0
+      Value: true
+      Visual Enabled: true
+    - Class: rviz/RobotModel
+      Name: Robot 2
+      Enabled: true
+      Alpha: 1
+      Collision Enabled: false
+      Robot Description: /robot_2/robot_description
+      TF Prefix: robot_2
+      Update Interval: 0
+      Value: true
+      Visual Enabled: true
+    - Class: rviz/RobotModel
+      Name: Robot 3
+      Enabled: true
+      Alpha: 1
+      Collision Enabled: false
+      Robot Description: /robot_3/robot_description
+      TF Prefix: robot_3
+      Update Interval: 0
+      Value: true
+      Visual Enabled: true
+    - Class: rviz/RobotModel
+      Name: Robot 4
+      Enabled: true
+      Alpha: 1
+      Collision Enabled: false
+      Robot Description: /robot_4/robot_description
+      TF Prefix: robot_4
+      Update Interval: 0
+      Value: true
+      Visual Enabled: true
+    - Class: rviz/RobotModel
+      Name: Robot 5
+      Enabled: true
+      Alpha: 1
+      Collision Enabled: false
+      Robot Description: /robot_5/robot_description
+      TF Prefix: robot_5
+      Update Interval: 0
+      Value: true
+      Visual Enabled: true
+    - Class: rviz/RobotModel
+      Name: Robot 6
+      Enabled: true
+      Alpha: 1
+      Collision Enabled: false
+      Robot Description: /robot_6/robot_description
+      TF Prefix: robot_6
+      Update Interval: 0
+      Value: true
+      Visual Enabled: true
+    - Class: rviz/LaserScan
+      Name: Robot 1 Laser
+      Enabled: true
+      Alpha: 1
+      Color: 255; 60; 60
+      Color Transformer: FlatColor
+      Decay Time: 0
+      Position Transformer: XYZ
+      Queue Size: 10
+      Selectable: true
+      Size (Pixels): 5
+      Size (m): 0.025
+      Style: Flat Squares
+      Topic: /robot_1/scan
+      Unreliable: false
+      Use Fixed Frame: true
+      Value: true
+    - Class: rviz/LaserScan
+      Name: Robot 2 Laser
+      Enabled: true
+      Alpha: 1
+      Color: 255; 170; 40
+      Color Transformer: FlatColor
+      Decay Time: 0
+      Position Transformer: XYZ
+      Queue Size: 10
+      Selectable: true
+      Size (Pixels): 5
+      Size (m): 0.025
+      Style: Flat Squares
+      Topic: /robot_2/scan
+      Unreliable: false
+      Use Fixed Frame: true
+      Value: true
+    - Class: rviz/LaserScan
+      Name: Robot 3 Laser
+      Enabled: true
+      Alpha: 1
+      Color: 70; 255; 90
+      Color Transformer: FlatColor
+      Decay Time: 0
+      Position Transformer: XYZ
+      Queue Size: 10
+      Selectable: true
+      Size (Pixels): 5
+      Size (m): 0.025
+      Style: Flat Squares
+      Topic: /robot_3/scan
+      Unreliable: false
+      Use Fixed Frame: true
+      Value: true
+    - Class: rviz/LaserScan
+      Name: Robot 4 Laser
+      Enabled: true
+      Alpha: 1
+      Color: 60; 140; 255
+      Color Transformer: FlatColor
+      Decay Time: 0
+      Position Transformer: XYZ
+      Queue Size: 10
+      Selectable: true
+      Size (Pixels): 5
+      Size (m): 0.025
+      Style: Flat Squares
+      Topic: /robot_4/scan
+      Unreliable: false
+      Use Fixed Frame: true
+      Value: true
+    - Class: rviz/LaserScan
+      Name: Robot 5 Laser
+      Enabled: true
+      Alpha: 1
+      Color: 255; 70; 220
+      Color Transformer: FlatColor
+      Decay Time: 0
+      Position Transformer: XYZ
+      Queue Size: 10
+      Selectable: true
+      Size (Pixels): 5
+      Size (m): 0.025
+      Style: Flat Squares
+      Topic: /robot_5/scan
+      Unreliable: false
+      Use Fixed Frame: true
+      Value: true
+    - Class: rviz/LaserScan
+      Name: Robot 6 Laser
+      Enabled: true
+      Alpha: 1
+      Color: 40; 240; 255
+      Color Transformer: FlatColor
+      Decay Time: 0
+      Position Transformer: XYZ
+      Queue Size: 10
+      Selectable: true
+      Size (Pixels): 5
+      Size (m): 0.025
+      Style: Flat Squares
+      Topic: /robot_6/scan
+      Unreliable: false
+      Use Fixed Frame: true
+      Value: true
+    - Class: rviz/Path
+      Name: Robot 1 Global Plan
+      Enabled: true
+      Topic: /robot_1/move_base/GlobalPlanner/plan
+      Color: 255; 50; 50
+      Line Style: Lines
+      Line Width: 0.03
+    - Class: rviz/Path
+      Name: Robot 2 Global Plan
+      Enabled: true
+      Topic: /robot_2/move_base/GlobalPlanner/plan
+      Color: 255; 150; 30
+      Line Style: Lines
+      Line Width: 0.03
+    - Class: rviz/Path
+      Name: Robot 3 Global Plan
+      Enabled: true
+      Topic: /robot_3/move_base/GlobalPlanner/plan
+      Color: 50; 255; 80
+      Line Style: Lines
+      Line Width: 0.03
+    - Class: rviz/Path
+      Name: Robot 4 Global Plan
+      Enabled: true
+      Topic: /robot_4/move_base/GlobalPlanner/plan
+      Color: 50; 130; 255
+      Line Style: Lines
+      Line Width: 0.03
+    - Class: rviz/Path
+      Name: Robot 5 Global Plan
+      Enabled: true
+      Topic: /robot_5/move_base/GlobalPlanner/plan
+      Color: 255; 50; 210
+      Line Style: Lines
+      Line Width: 0.03
+    - Class: rviz/Path
+      Name: Robot 6 Global Plan
+      Enabled: true
+      Topic: /robot_6/move_base/GlobalPlanner/plan
+      Color: 40; 240; 255
+      Line Style: Lines
+      Line Width: 0.03
+    - Class: rviz/TF
+      Name: TF
+      Enabled: true
+      Frame Timeout: 15
+      Marker Scale: 0.28
+      Show Arrows: true
+      Show Axes: true
+      Show Names: false
+  Enabled: true
+  Global Options:
+    Background Color: 35; 35; 35
+    Default Light: true
+    Fixed Frame: robot_1/map
+    Frame Rate: 15
+  Tools:
+    - Class: rviz/Interact
+    - Class: rviz/MoveCamera
+    - Class: rviz/Select
+    - Class: rviz/FocusCamera
+    - Class: rviz/Measure
+    - Class: rviz/PublishPoint
+      Single click: true
+      Topic: /clicked_point
+  Views:
+    Current:
+      Class: rviz/TopDownOrtho
+      Name: Top View
+      Scale: 65
+      Target Frame: robot_1/map
+      X: 2.6
+      Y: 0.0
+Window Geometry:
+  Height: 900
+  Width: 1440
+  X: 40
+  Y: 40

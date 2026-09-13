@@ -1,0 +1,109 @@
+<?xml version="1.0"?>
+<launch>
+
+    <!--
+      Shared-map multi-navigation.
+
+      robot_1 is the MAP/AMCL ANCHOR, not necessarily the active team leader.
+      All robots get a move_base instance.
+      Role Router decides which move_base is allowed to drive.
+    -->
+
+    <arg name="robot_count" default="6"/>
+    <arg name="map" default="branch_merge_map"/>
+    <arg name="sim" default="true"/>
+    <arg name="map_anchor" default="robot_1"/>
+    <arg name="drive_type" default="omni"/>
+
+    <!-- Secondary robots use scan_raw directly. -->
+    <arg name="scan_frame_suffix" default="base_footprint"/>
+
+    <!-- Primary map anchor: map_server + AMCL + move_base -->
+    <include file="$(find jetauto_navigation)/launch/navigation.launch">
+        <arg name="map" value="$(arg map)"/>
+        <arg name="sim" value="$(arg sim)"/>
+        <arg name="drive_type" value="$(arg drive_type)"/>
+        <arg name="robot_name" value="$(arg map_anchor)"/>
+        <arg name="master_name" value="$(arg map_anchor)"/>
+    </include>
+
+    <!--
+      Replicate map_anchor/map -> map_anchor/odom to all robot_i/odom.
+      Do NOT run another shared_map_tf_bridge separately.
+    -->
+    <node pkg="jetauto_multi"
+          type="shared_map_tf_bridge.py"
+          name="shared_map_tf_bridge"
+          output="screen">
+        <param name="map_frame" value="$(arg map_anchor)/map"/>
+        <param name="source_odom_frame" value="$(arg map_anchor)/odom"/>
+        <param name="robot_count" value="$(arg robot_count)"/>
+        <param name="source_robot_id" value="1"/>
+        <param name="publish_source_robot" value="false"/>
+        <param name="publish_rate" value="30.0"/>
+    </node>
+
+    <include file="$(find jetauto_navigation)/launch/shared_map_move_base.launch" if="$(eval int(arg('robot_count')) >= 2)">
+        <arg name="robot_name" value="robot_2"/>
+        <arg name="map_anchor" value="$(arg map_anchor)"/>
+        <arg name="drive_type" value="$(arg drive_type)"/>
+        <arg name="scan_frame" value="robot_2/$(arg scan_frame_suffix)"/>
+    </include>
+
+    <include file="$(find jetauto_navigation)/launch/shared_map_move_base.launch" if="$(eval int(arg('robot_count')) >= 3)">
+        <arg name="robot_name" value="robot_3"/>
+        <arg name="map_anchor" value="$(arg map_anchor)"/>
+        <arg name="drive_type" value="$(arg drive_type)"/>
+        <arg name="scan_frame" value="robot_3/$(arg scan_frame_suffix)"/>
+    </include>
+
+    <include file="$(find jetauto_navigation)/launch/shared_map_move_base.launch" if="$(eval int(arg('robot_count')) >= 4)">
+        <arg name="robot_name" value="robot_4"/>
+        <arg name="map_anchor" value="$(arg map_anchor)"/>
+        <arg name="drive_type" value="$(arg drive_type)"/>
+        <arg name="scan_frame" value="robot_4/$(arg scan_frame_suffix)"/>
+    </include>
+
+    <include file="$(find jetauto_navigation)/launch/shared_map_move_base.launch" if="$(eval int(arg('robot_count')) >= 5)">
+        <arg name="robot_name" value="robot_5"/>
+        <arg name="map_anchor" value="$(arg map_anchor)"/>
+        <arg name="drive_type" value="$(arg drive_type)"/>
+        <arg name="scan_frame" value="robot_5/$(arg scan_frame_suffix)"/>
+    </include>
+
+    <include file="$(find jetauto_navigation)/launch/shared_map_move_base.launch" if="$(eval int(arg('robot_count')) >= 6)">
+        <arg name="robot_name" value="robot_6"/>
+        <arg name="map_anchor" value="$(arg map_anchor)"/>
+        <arg name="drive_type" value="$(arg drive_type)"/>
+        <arg name="scan_frame" value="robot_6/$(arg scan_frame_suffix)"/>
+    </include>
+
+    <include file="$(find jetauto_navigation)/launch/shared_map_move_base.launch" if="$(eval int(arg('robot_count')) >= 7)">
+        <arg name="robot_name" value="robot_7"/>
+        <arg name="map_anchor" value="$(arg map_anchor)"/>
+        <arg name="drive_type" value="$(arg drive_type)"/>
+        <arg name="scan_frame" value="robot_7/$(arg scan_frame_suffix)"/>
+    </include>
+
+    <include file="$(find jetauto_navigation)/launch/shared_map_move_base.launch" if="$(eval int(arg('robot_count')) >= 8)">
+        <arg name="robot_name" value="robot_8"/>
+        <arg name="map_anchor" value="$(arg map_anchor)"/>
+        <arg name="drive_type" value="$(arg drive_type)"/>
+        <arg name="scan_frame" value="robot_8/$(arg scan_frame_suffix)"/>
+    </include>
+
+    <include file="$(find jetauto_navigation)/launch/shared_map_move_base.launch" if="$(eval int(arg('robot_count')) >= 9)">
+        <arg name="robot_name" value="robot_9"/>
+        <arg name="map_anchor" value="$(arg map_anchor)"/>
+        <arg name="drive_type" value="$(arg drive_type)"/>
+        <arg name="scan_frame" value="robot_9/$(arg scan_frame_suffix)"/>
+    </include>
+
+    <include file="$(find jetauto_navigation)/launch/shared_map_move_base.launch" if="$(eval int(arg('robot_count')) >= 10)">
+        <arg name="robot_name" value="robot_10"/>
+        <arg name="map_anchor" value="$(arg map_anchor)"/>
+        <arg name="drive_type" value="$(arg drive_type)"/>
+        <arg name="scan_frame" value="robot_10/$(arg scan_frame_suffix)"/>
+    </include>
+
+</launch>

@@ -3,7 +3,7 @@
     <arg name="map"         default=""/>
     <arg name="app"         default="false"/>
     <arg name="sim"         default="false"/>
-    <arg name="drive_type"  default="diff-corrected"/>
+    <arg name="drive_type"  default="omni"/>
     <arg     if="$(arg app)" name="robot_name"  default="/"/>
     <arg unless="$(arg app)" name="robot_name"  default="$(env ROBOT_HOST)"/>
     <arg     if="$(arg app)" name="master_name" default="/"/>

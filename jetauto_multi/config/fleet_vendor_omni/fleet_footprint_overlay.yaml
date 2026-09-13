@@ -1,0 +1,15 @@
+# Fleet-only collision model. The frozen vendor files remain unchanged.
+global_costmap:
+  robot_radius: 0.20
+  footprint: [[-0.15, -0.1275], [-0.15, 0.1275], [0.15, 0.1275], [0.15, -0.1275]]
+  footprint_padding: 0.01
+
+local_costmap:
+  robot_radius: 0.20
+  footprint: [[-0.15, -0.1275], [-0.15, 0.1275], [0.15, 0.1275], [0.15, -0.1275]]
+  footprint_padding: 0.01
+
+TebLocalPlannerROS:
+  footprint_model:
+    type: polygon
+    vertices: [[-0.15, -0.1275], [-0.15, 0.1275], [0.15, 0.1275], [0.15, -0.1275]]

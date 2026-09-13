@@ -1,0 +1,8 @@
+# Shared real/sim scan-filter settings. TF queries are always non-blocking.
+body_radius: 0.20
+range_margin: 0.05
+angle_margin_deg: 3.0
+use_scan_stamp: false
+max_output_rate: 5.0
+# Do not feed AMCL/local costmap old scans; keep the existing 0.8 s freshness bound.
+max_scan_age: 0.8

@@ -1,0 +1,46 @@
+# Relative center offsets in metres; anchor is the front-row center.
+# Library only: not a launch profile, not a real/sim acceptance certificate.
+# All layouts have ten slots. Car heading remains map yaw=0.
+formations:
+  single_file:
+    use: narrow_straight_passage
+    placement_order: front_first
+    slots: [[0,0],[-0.6,0],[-1.2,0],[-1.8,0],[-2.4,0],[-3.0,0],[-3.6,0],[-4.2,0],[-4.8,0],[-5.4,0]]
+  double_column:
+    use: ordinary_corridor
+    placement_order: front_first
+    slots: [[0,0.3],[-0.6,0.3],[-1.2,0.3],[-1.8,0.3],[-2.4,0.3],[0,-0.3],[-0.6,-0.3],[-1.2,-0.3],[-1.8,-0.3],[-2.4,-0.3]]
+  staggered_columns:
+    use: staggered_open_corridor
+    placement_order: front_first
+    slots: [[0,0.35],[-0.6,0.35],[-1.2,0.35],[-1.8,0.35],[-2.4,0.35],[-0.3,-0.35],[-0.9,-0.35],[-1.5,-0.35],[-2.1,-0.35],[-2.7,-0.35]]
+  two_rows:
+    use: wide_start_or_arrival_area
+    placement_order: front_first
+    slots: [[0,1.2],[0,0.6],[0,0],[0,-0.6],[0,-1.2],[-0.9,1.2],[-0.9,0.6],[-0.9,0],[-0.9,-0.6],[-0.9,-1.2]]
+  narrow_v_pairs:
+    use: two_separate_narrow_routes
+    placement_order: front_first
+    slots: [[0,1.5],[-0.7,1.78],[-0.7,1.22],[-1.4,1.8],[-1.4,1.2],[0,-1.5],[-0.7,-1.22],[-0.7,-1.78],[-1.4,-1.2],[-1.4,-1.8]]
+  wide_v_pairs:
+    use: two_wide_routes
+    placement_order: front_first
+    slots: [[0,1.5],[-0.7,1.95],[-0.7,1.05],[-1.4,2.4],[-1.4,0.6],[0,-1.5],[-0.7,-1.05],[-0.7,-1.95],[-1.4,-0.6],[-1.4,-2.4]]
+  diamond_pairs:
+    use: two_open_arrival_areas
+    placement_order: front_first
+    slots: [[0,1.5],[-0.7,2.1],[-0.7,0.9],[-1.4,1.5],[-0.7,1.5],[0,-1.5],[-0.7,-0.9],[-0.7,-2.1],[-1.4,-1.5],[-0.7,-1.5]]
+  triangle_10:
+    use: open_single_arrival_area
+    placement_order: front_first
+    slots: [[0,0],[-0.6,0.3],[-0.6,-0.3],[-1.2,0.6],[-1.2,0],[-1.2,-0.6],[-1.8,0.9],[-1.8,0.3],[-1.8,-0.3],[-1.8,-0.9]]
+
+# Ordering suggestions, NOT executable missions. Anchors and route checks are
+# map-specific. Insert translate phases only after checking the complete sweep.
+schemes:
+  standard_split: [two_rows, double_column, narrow_v_pairs]
+  narrow_then_open: [double_column, single_file, double_column, triangle_10]
+  open_then_narrow: [triangle_10, double_column, single_file]
+  wide_split: [two_rows, staggered_columns, wide_v_pairs]
+  dual_station: [double_column, diamond_pairs]
+  compact_arrival: [single_file, double_column, two_rows]

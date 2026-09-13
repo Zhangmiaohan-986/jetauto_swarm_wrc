@@ -1,6 +1,7 @@
 #通用配置文件
-robot_radius: 0.05    # 机器人半径(robot radius)
-#footprint: [[-0.17, -0.13], [-0.17, 0.13], [0.17, 0.13], [0.17, -0.13]]
+robot_radius: 0.20  # explicit radius to avoid teammate inflation blocking goals
+# robot_radius: 0.05    # 机器人半径(robot radius)
+footprint: [[-0.17, -0.13], [-0.17, 0.13], [0.17, 0.13], [0.17, -0.13]]
 
 obstacle_layer:
   enabled: true

@@ -1,0 +1,8 @@
+map_yaml: maps/realmap_obstacle/robot_1_obstacle_20260901_v3/robot_1_obstacle_20260901_v3.yaml
+mission: config/fleet_vendor_omni/profiles/fleet10_same_map/mission.yaml
+runtime: config/fleet_vendor_omni/profiles/fleet10_same_map/runtime.bash
+rviz: rviz/fleet_vendor_omni_ten.rviz
+vm_tf_relay: true
+vm_sensor_relay: true
+# Full raw motor/IMU recording is for dedicated diagnostics, not fleet runs.
+record_bottom_raw: false

@@ -10,15 +10,41 @@
     <arg name="initial_pose_x"  default="0.0"/>
     <arg name="initial_pose_y"  default="0.0"/>
     <arg name="initial_pose_a"  default="0.0"/>
+    <!-- AMCL upstream defaults are intentionally broad.  Keep those defaults
+         here for legacy callers; measured-start real launches override them. -->
+    <arg name="initial_cov_xx"  default="0.25"/>
+    <arg name="initial_cov_yy"  default="0.25"/>
+    <arg name="initial_cov_aa"  default="0.068538919452"/>
+    <!-- Defaults preserve the legacy frozen-simulation behavior. -->
+    <arg name="tf_broadcast"    default="false"/>
+    <arg name="update_min_d"    default="10.0"/>
+    <arg name="update_min_a"    default="10.0"/>
+    <arg name="publish_static_tf" default="true"/>
+    <arg name="laser_max_beams" default="30"/>
+    <arg name="laser_z_hit" default="0.01"/>
+    <arg name="laser_z_short" default="0.05"/>
+    <arg name="laser_z_max" default="0.05"/>
+    <arg name="laser_z_rand" default="0.01"/>
+    <arg name="laser_sigma_hit" default="0.05"/>
+    <arg name="odom_alpha1" default="0.1"/>
+    <arg name="odom_alpha2" default="0.4"/>
+    <arg name="odom_alpha3" default="0.4"/>
+    <arg name="odom_alpha4" default="0.1"/>
+    <arg name="odom_alpha5" default="0.0"/>
 
     <!-- AMCL -->
     <node pkg="amcl" type="amcl" name="amcl" respawn="false">
+        <!-- 仿真冻结定位：map->odom 由下方静态 TF 提供，AMCL 不再广播 -->
+        <param name="tf_broadcast"              value="$(arg tf_broadcast)"/>
         <param name="use_map_topic"             value="$(arg use_map_topic)"/>
         <param name="min_particles"             value="500"/>
         <param name="max_particles"             value="3000"/>
-        <param name="kld_err"                   value="0.01"/>
-        <param name="update_min_d"              value="0.01"/>
-        <param name="update_min_a"              value="0.1"/>
+        <param name="kld_err"                   value="0.5"/>
+        <!-- Sim freeze: odom is ground truth in Gazebo.
+             Teammate lasers + symmetric channel corrupt AMCL
+             rotation, so never update after initial pose. -->
+        <param name="update_min_d"              value="$(arg update_min_d)"/>
+        <param name="update_min_a"              value="$(arg update_min_a)"/>
         <param name="resample_interval"         value="2"/>
         <param name="transform_tolerance"       value="0.5"/>
         <param name="recovery_alpha_slow"       value="0.0"/>
@@ -27,29 +53,40 @@
 
         <param name="laser_min_range"           value="0.1"/>
         <param name="laser_max_range"           value="6"/>
-        <param name="laser_max_beams"           value="30"/>
-        <param name="laser_z_hit"               value="0.5"/>
-        <param name="laser_z_short"             value="0.05"/>
-        <param name="laser_z_max"               value="0.05"/>
-        <param name="laser_z_rand"              value="0.5"/>
-        <param name="laser_sigma_hit"           value="0.05"/>
+        <param name="laser_max_beams"           value="$(arg laser_max_beams)"/>
+        <param name="laser_z_hit"               value="$(arg laser_z_hit)"/>
+        <param name="laser_z_short"             value="$(arg laser_z_short)"/>
+        <param name="laser_z_max"               value="$(arg laser_z_max)"/>
+        <param name="laser_z_rand"              value="$(arg laser_z_rand)"/>
+        <param name="laser_sigma_hit"           value="$(arg laser_sigma_hit)"/>
         <param name="laser_lambda_short"        value="0.1"/>
         <param name="laser_likelihood_max_dist" value="2.0"/>
         <param name="laser_model_type"          value="likelihood_field"/>
         <param name="initial_pose_x"            value="$(arg initial_pose_x)"/>
         <param name="initial_pose_y"            value="$(arg initial_pose_y)"/>
         <param name="initial_pose_a"            value="$(arg initial_pose_a)"/>
+        <param name="initial_cov_xx"            value="$(arg initial_cov_xx)"/>
+        <param name="initial_cov_yy"            value="$(arg initial_cov_yy)"/>
+        <param name="initial_cov_aa"            value="$(arg initial_cov_aa)"/>
 
         <param name="odom_model_type"           value="$(arg drive_type)"/>
-        <param name="odom_alpha1"               value="0.1"/>
-        <param name="odom_alpha2"               value="0.4"/>
-        <param name="odom_alpha3"               value="0.4"/>
-        <param name="odom_alpha4"               value="0.1"/>
-        <param name="odom_alpha5"               value="0.0"/>
+        <param name="odom_alpha1"               value="$(arg odom_alpha1)"/>
+        <param name="odom_alpha2"               value="$(arg odom_alpha2)"/>
+        <param name="odom_alpha3"               value="$(arg odom_alpha3)"/>
+        <param name="odom_alpha4"               value="$(arg odom_alpha4)"/>
+        <param name="odom_alpha5"               value="$(arg odom_alpha5)"/>
         <param name="global_frame_id"           value="$(arg map_frame_id)"/>
         <param name="odom_frame_id"             value="$(arg odom_frame_id)"/>
         <param name="base_frame_id"             value="$(arg base_frame_id)"/>
         <remap from="map"                       to="$(arg map_topic)"/>
         <remap from="scan"                      to="$(arg scan_topic)"/>
      </node>
+
+    <!-- map->odom 静态 TF：仿真中 odom 无漂移、AMCL 已冻结，
+         两系关系恒定（单位变换）。静态 TF 永不从缓存过期，
+         避免全局规划器因 TF 过期瞬间 Failed to get a plan。 -->
+    <node if="$(arg publish_static_tf)" pkg="tf"
+          type="static_transform_publisher"
+          name="map_odom_static"
+          args="0 0 0 0 0 0 1 $(arg map_frame_id) $(arg odom_frame_id) 100"/>
 </launch>

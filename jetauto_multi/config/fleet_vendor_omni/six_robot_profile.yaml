@@ -1,0 +1,4 @@
+map_yaml: maps/realmap_obstacle/robot_1_obstacle_20260901_v3/robot_1_obstacle_20260901_v3.yaml
+mission: config/fleet_vendor_omni/six_robot_demo.yaml
+runtime: config/fleet_vendor_omni/six_robot_runtime.bash
+rviz: rviz/fleet_vendor_omni_six.rviz

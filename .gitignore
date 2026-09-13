@@ -1,0 +1,17 @@
+# ROS/catkin output
+build/
+devel/
+install/
+.catkin_tools/
+.ros/
+
+# Runtime and editor output
+**/__pycache__/
+*.py[cod]
+.pytest_cache/
+*.bag.active
+*.log
+.vscode/
+.idea/
+Thumbs.db
+.DS_Store

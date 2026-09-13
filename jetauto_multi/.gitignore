@@ -1,0 +1,28 @@
+# Python and test caches
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Catkin and ROS runtime output
+build/
+devel/
+install/
+.catkin_tools/
+.ros/
+*.bag
+*.bag.active
+*.db3
+*.log
+
+# Experiment output belongs outside the source tree
+records/
+runtime/
+analysis_*/
+*_records/
+
+# Editor and operating-system files
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+

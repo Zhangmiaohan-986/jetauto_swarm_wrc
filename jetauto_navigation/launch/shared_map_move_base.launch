@@ -1,0 +1,147 @@
+<?xml version="1.0"?>
+
+<launch>
+
+    <!--
+      Start move_base for any robot that uses the shared robot_1/map tree.
+      NO map_server.
+      NO AMCL.
+      NO extra map->odom publisher.
+
+      shared_map_tf_bridge must provide:
+          robot_1/map -> robot_i/odom
+    -->
+
+    <arg name="robot_name"/>
+    <arg name="map_anchor" default="robot_1"/>
+
+    <arg name="drive_type" default="omni"/>
+    <arg name="use_teb" default="true"/>
+    <arg name="teb_holonomic_robot" default="false"/>
+    <arg name="teb_weight_kinematics_nh" default="3.0"/>
+    <arg name="teb_xy_goal_tolerance" default="0.04"/>
+    <arg name="oscillation_timeout" default="15.0"/>
+    <arg name="teb_max_vel_x" default="0.15"/>
+    <arg name="teb_max_vel_y" default="0.15"/>
+    <arg name="teb_max_vel_x_backwards" default="0.08"/>
+    <arg name="teb_max_vel_theta" default="0.30"/>
+    <arg name="teb_acc_lim_x" default="0.20"/>
+    <arg name="teb_acc_lim_y" default="0.15"/>
+    <arg name="teb_penalty_epsilon" default="0.05"/>
+
+    <arg name="map_topic"
+         default="/$(arg map_anchor)/map"/>
+
+    <arg name="map_frame"
+         default="$(arg map_anchor)/map"/>
+
+    <arg name="odom_topic"
+         default="/$(arg robot_name)/odom"/>
+
+    <arg name="odom_frame"
+         default="$(arg robot_name)/odom"/>
+
+    <arg name="base_frame"
+         default="$(arg robot_name)/base_footprint"/>
+
+    <arg name="scan_topic"
+         default="/$(arg robot_name)/scan_raw"/>
+
+    <!--
+      The local planner may use a teammate-filtered scan while the global
+      navigation layer keeps its existing sensor input.  Real-robot safety is
+      outside move_base and continues to subscribe to scan_raw.
+    -->
+    <arg name="local_scan_topic"
+         default="$(arg scan_topic)"/>
+
+    <!--
+      Override this if scan_raw/header.frame_id is not base_footprint.
+    -->
+    <arg name="scan_frame"
+         default="$(arg robot_name)/base_footprint"/>
+
+
+    <group ns="$(arg robot_name)">
+
+        <include file="$(find jetauto_navigation)/launch/include/move_base.launch">
+
+            <arg name="drive_type"
+                 value="$(arg drive_type)"/>
+
+            <arg name="use_teb"
+                 value="$(arg use_teb)"/>
+
+            <arg name="teb_holonomic_robot"
+                 value="$(arg teb_holonomic_robot)"/>
+
+            <arg name="teb_weight_kinematics_nh"
+                 value="$(arg teb_weight_kinematics_nh)"/>
+
+            <arg name="teb_xy_goal_tolerance"
+                 value="$(arg teb_xy_goal_tolerance)"/>
+
+            <arg name="oscillation_timeout"
+                 value="$(arg oscillation_timeout)"/>
+
+            <arg name="teb_max_vel_x" value="$(arg teb_max_vel_x)"/>
+            <arg name="teb_max_vel_y" value="$(arg teb_max_vel_y)"/>
+            <arg name="teb_max_vel_x_backwards" value="$(arg teb_max_vel_x_backwards)"/>
+            <arg name="teb_max_vel_theta" value="$(arg teb_max_vel_theta)"/>
+            <arg name="teb_acc_lim_x" value="$(arg teb_acc_lim_x)"/>
+            <arg name="teb_acc_lim_y" value="$(arg teb_acc_lim_y)"/>
+            <arg name="teb_penalty_epsilon" value="$(arg teb_penalty_epsilon)"/>
+
+            <arg name="cmd_vel_topic"
+                 value="nav/cmd_vel"/>
+
+
+            <arg name="global_costmap_map_topic"
+                 value="$(arg map_topic)"/>
+
+            <arg name="global_costmap_sensor_frame"
+                 value="$(arg scan_frame)"/>
+
+            <arg name="global_costmap_sensor_topic"
+                 value="$(arg scan_topic)"/>
+
+            <arg name="global_costmap_global_frame"
+                 value="$(arg map_frame)"/>
+
+            <arg name="global_costmap_robot_base_frame"
+                 value="$(arg base_frame)"/>
+
+
+            <arg name="local_costmap_map_topic"
+                 value="$(arg map_topic)"/>
+
+            <arg name="local_costmap_sensor_frame"
+                 value="$(arg scan_frame)"/>
+
+            <arg name="local_costmap_sensor_topic"
+                 value="$(arg local_scan_topic)"/>
+
+            <arg name="local_costmap_global_frame"
+                 value="$(arg odom_frame)"/>
+
+            <arg name="local_costmap_robot_base_frame"
+                 value="$(arg base_frame)"/>
+
+
+            <arg name="virtual_wall_map_frame"
+                 value="$(arg map_frame)"/>
+
+            <arg name="dwa_global_frame"
+                 value="$(arg map_frame)"/>
+
+            <arg name="teb_odom_topic"
+                 value="$(arg odom_topic)"/>
+
+            <arg name="teb_map_frame"
+                 value="$(arg odom_frame)"/>
+
+        </include>
+
+    </group>
+
+</launch>

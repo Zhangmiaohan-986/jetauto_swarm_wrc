@@ -1,0 +1,140 @@
+<?xml version="1.0"?>
+<launch>
+  <arg name="robot_name"/>
+  <arg name="robot_id"/>
+  <arg name="robot_count" default="3"/>
+  <arg name="map_frame" default="robot_1/map"/>
+  <arg name="map_topic" default="/robot_1/map"/>
+  <arg name="initial_x"/>
+  <arg name="initial_y"/>
+  <arg name="initial_yaw"/>
+  <arg name="global_costmap_sensor_topic"
+       default="/$(arg robot_name)/scan"/>
+  <!-- Real uses the frozen vendor AMCL node.  The simulation adapter emits
+       the same amcl_pose and map->odom contract, so it disables this one
+       node without changing move_base, TEB, topics, or TF names. -->
+  <arg name="enable_amcl" default="true"/>
+  <arg name="fuse_imu_yaw" default="false"/>
+  <arg name="imu_bias_estimation" default="false"/>
+  <arg name="max_vel_x" default="0.06"/>
+  <arg name="max_vel_y" default="0.06"/>
+  <arg name="max_vel_x_backwards" default="0.06"/>
+  <arg name="max_vel_theta" default="0.08"/>
+  <arg name="acc_lim_x" default="0.10"/>
+  <arg name="acc_lim_y" default="0.10"/>
+  <arg name="acc_lim_theta" default="0.15"/>
+  <arg name="amcl_update_min_d" default="0.01"/>
+  <arg name="amcl_update_min_a" default="0.10"/>
+  <arg name="amcl_recovery_alpha_slow" default="0.0"/>
+  <arg name="amcl_recovery_alpha_fast" default="0.0"/>
+
+  <arg name="use_transition_via_points" default="false"/>
+  <arg name="transition_via_weight" default="10.0"/>
+  <arg name="transition_motion_weight" default="20.0"/>
+  <group ns="$(arg robot_name)">
+    <!-- Mask known teammates for AMCL and both costmaps. Fleet-level
+         clearance checking remains responsible for robot-to-robot stops. -->
+    <node pkg="jetauto_multi" type="amcl_teammate_scan_filter.py"
+          name="amcl_teammate_scan_filter" output="screen">
+      <param name="robot_id" value="$(arg robot_id)"/>
+      <param name="robot_count" value="$(arg robot_count)"/>
+      <param name="input_topic" value="scan"/>
+      <param name="output_topic" value="amcl_scan"/>
+      <rosparam command="load"
+                file="$(find jetauto_multi)/config/fleet_vendor_omni/amcl_scan_filter.yaml"/>
+    </node>
+
+    <include if="$(arg enable_amcl)"
+             file="$(find jetauto_multi)/vendor/jetauto_navigation/launch/amcl.launch">
+      <arg name="drive_type" value="omni"/>
+      <arg name="scan_topic" value="/$(arg robot_name)/amcl_scan"/>
+      <arg name="use_map_topic" value="true"/>
+      <arg name="map_topic" value="$(arg map_topic)"/>
+      <arg name="map_frame_id" value="$(arg map_frame)"/>
+      <arg name="odom_frame_id" value="$(arg robot_name)/odom"/>
+      <arg name="base_frame_id" value="$(arg robot_name)/base_footprint"/>
+      <arg name="initial_pose_x" value="$(arg initial_x)"/>
+      <arg name="initial_pose_y" value="$(arg initial_y)"/>
+      <arg name="initial_pose_a" value="$(arg initial_yaw)"/>
+    </include>
+
+    <!-- A stopped AMCL saves its covariance to the still-running ROS master.
+         Reset all three variances on every launch, not only x/y/yaw above. -->
+    <rosparam command="load" ns="amcl"
+              file="$(find jetauto_multi)/config/fleet_vendor_omni/amcl_initialization.yaml"/>
+
+    <include file="$(find jetauto_multi)/vendor/jetauto_navigation/launch/move_base.launch">
+      <arg name="robot_type" value="JetAuto"/>
+      <arg name="drive_type" value="omni"/>
+      <arg name="use_teb" value="true"/>
+      <arg name="cmd_vel_topic" value="/$(arg robot_name)/jetauto_controller/cmd_vel"/>
+      <arg name="global_costmap_map_topic" value="$(arg map_topic)"/>
+      <arg name="global_costmap_sensor_frame" value="$(arg robot_name)/base_footprint"/>
+      <arg name="global_costmap_sensor_topic" value="$(arg global_costmap_sensor_topic)"/>
+      <arg name="global_costmap_global_frame" value="$(arg map_frame)"/>
+      <arg name="global_costmap_robot_base_frame" value="$(arg robot_name)/base_footprint"/>
+      <arg name="local_costmap_map_topic" value="$(arg map_topic)"/>
+      <arg name="local_costmap_sensor_frame" value="$(arg robot_name)/base_footprint"/>
+      <arg name="local_costmap_sensor_topic" value="/$(arg robot_name)/amcl_scan"/>
+      <arg name="local_costmap_global_frame" value="$(arg robot_name)/odom"/>
+      <arg name="local_costmap_robot_base_frame" value="$(arg robot_name)/base_footprint"/>
+      <arg name="virtual_wall_map_frame" value="$(arg map_frame)"/>
+      <arg name="dwa_global_frame" value="$(arg map_frame)"/>
+      <arg name="teb_odom_topic" value="/$(arg robot_name)/odom"/>
+      <arg name="teb_map_frame" value="$(arg robot_name)/odom"/>
+    </include>
+
+    <rosparam command="load"
+              file="$(find jetauto_multi)/config/fleet_vendor_omni/fleet_footprint_overlay.yaml"
+              ns="move_base"/>
+    <rosparam command="load"
+              file="$(find jetauto_multi)/config/fleet_vendor_omni/teb_defaults.yaml"
+              ns="move_base/TebLocalPlannerROS"/>
+    <param name="move_base/TebLocalPlannerROS/max_vel_x" value="$(arg max_vel_x)"/>
+    <param name="move_base/TebLocalPlannerROS/max_vel_y" value="$(arg max_vel_y)"/>
+    <param name="move_base/TebLocalPlannerROS/max_vel_x_backwards" value="$(arg max_vel_x_backwards)"/>
+    <param name="move_base/TebLocalPlannerROS/max_vel_theta" value="$(arg max_vel_theta)"/>
+    <param name="move_base/TebLocalPlannerROS/acc_lim_x" value="$(arg acc_lim_x)"/>
+    <param name="move_base/TebLocalPlannerROS/acc_lim_y" value="$(arg acc_lim_y)"/>
+    <param name="move_base/TebLocalPlannerROS/acc_lim_theta" value="$(arg acc_lim_theta)"/>
+    <!-- Gated profiles supply the permitted path, not GlobalPlanner's substitute. -->
+    <group if="$(arg use_transition_via_points)">
+      <param name="move_base/TebLocalPlannerROS/global_plan_viapoint_sep" value="-0.1"/>
+      <!-- Each committed prefix is one straight leg; nearest-point association
+           avoids ordered index+2 exhausting a short TEB at low speed. -->
+      <param name="move_base/TebLocalPlannerROS/via_points_ordered" value="false"/>
+      <param name="move_base/TebLocalPlannerROS/weight_viapoint" value="$(arg transition_via_weight)"/>
+      <!-- Melodic 0.8.4 clips vx/vy independently. Constrain BOTH axes in the
+           optimizer; vendor zero y weights distort diagonal command direction. -->
+      <param name="move_base/TebLocalPlannerROS/weight_max_vel_x" value="$(arg transition_motion_weight)"/>
+      <param name="move_base/TebLocalPlannerROS/weight_max_vel_y" value="$(arg transition_motion_weight)"/>
+      <param name="move_base/TebLocalPlannerROS/weight_max_vel_theta" value="$(arg transition_motion_weight)"/>
+      <param name="move_base/TebLocalPlannerROS/weight_acc_lim_x" value="$(arg transition_motion_weight)"/>
+      <param name="move_base/TebLocalPlannerROS/weight_acc_lim_y" value="$(arg transition_motion_weight)"/>
+      <param name="move_base/TebLocalPlannerROS/weight_acc_lim_theta" value="$(arg transition_motion_weight)"/>
+    </group>
+    <param name="amcl/update_min_d" value="$(arg amcl_update_min_d)"/>
+    <param name="amcl/update_min_a" value="$(arg amcl_update_min_a)"/>
+    <param name="amcl/recovery_alpha_slow" value="$(arg amcl_recovery_alpha_slow)"/>
+    <param name="amcl/recovery_alpha_fast" value="$(arg amcl_recovery_alpha_fast)"/>
+    <param name="move_base/GlobalPlanner/orientation_mode" value="0"/>
+    <param name="move_base/recovery_behavior_enabled" value="false"/>
+  </group>
+
+  <!-- The supervisor checks the exact values used to launch each robot. -->
+  <param name="/fleet_vendor_omni/runtime_profiles/$(arg robot_name)/fuse_imu_yaw"
+         value="$(arg fuse_imu_yaw)" type="bool"/>
+  <param name="/fleet_vendor_omni/runtime_profiles/$(arg robot_name)/imu_bias_estimation"
+         value="$(arg imu_bias_estimation)" type="bool"/>
+  <param name="/fleet_vendor_omni/runtime_profiles/$(arg robot_name)/max_vel_x" value="$(arg max_vel_x)"/>
+  <param name="/fleet_vendor_omni/runtime_profiles/$(arg robot_name)/max_vel_y" value="$(arg max_vel_y)"/>
+  <param name="/fleet_vendor_omni/runtime_profiles/$(arg robot_name)/max_vel_x_backwards" value="$(arg max_vel_x_backwards)"/>
+  <param name="/fleet_vendor_omni/runtime_profiles/$(arg robot_name)/max_vel_theta" value="$(arg max_vel_theta)"/>
+  <param name="/fleet_vendor_omni/runtime_profiles/$(arg robot_name)/acc_lim_x" value="$(arg acc_lim_x)"/>
+  <param name="/fleet_vendor_omni/runtime_profiles/$(arg robot_name)/acc_lim_y" value="$(arg acc_lim_y)"/>
+  <param name="/fleet_vendor_omni/runtime_profiles/$(arg robot_name)/acc_lim_theta" value="$(arg acc_lim_theta)"/>
+  <param name="/fleet_vendor_omni/runtime_profiles/$(arg robot_name)/amcl_update_min_d" value="$(arg amcl_update_min_d)"/>
+  <param name="/fleet_vendor_omni/runtime_profiles/$(arg robot_name)/amcl_update_min_a" value="$(arg amcl_update_min_a)"/>
+  <param name="/fleet_vendor_omni/runtime_profiles/$(arg robot_name)/amcl_recovery_alpha_slow" value="$(arg amcl_recovery_alpha_slow)"/>
+  <param name="/fleet_vendor_omni/runtime_profiles/$(arg robot_name)/amcl_recovery_alpha_fast" value="$(arg amcl_recovery_alpha_fast)"/>
+</launch>

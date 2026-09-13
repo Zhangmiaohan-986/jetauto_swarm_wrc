@@ -10,12 +10,14 @@ local_costmap:
   resolution: 0.05                  # 地图的分辨率，以米/单元为单位。(resolution of the map(meter))
   transform_tolerance: 1             # 指定可容忍的转换 (tf) 数据延迟（以秒为单位）(set latency tolerance of data conversion, unit: second)
   plugins:
-    - {name: obstacle_layer,  type: "costmap_2d::ObstacleLayer"}
+    # obstacle_layer 已移除：编队时队友互在 0.5~0.6m 内，
+    # 激光把队友标成障碍+膨胀会把局部规划挤死（震荡/放弃）。
+    # 碰撞安全由 safety_controller（scan_raw 前向急停）负责。
     - {name: inflation_layer, type: "costmap_2d::InflationLayer"}
     - {name: virtual_wall,    type: "virtual_wall::VirtualWall"}
   inflation_layer:
     enabled: true
-    inflation_radius: 0.3 # 不能大于robot_radius, 全局规划时base_footprint与障碍物保持的最小距离, 小于此值则规划失败(not greater than robot_radius. Minimum distance between base_footprint and obstacle during global planning. When it is smaller than this value, planning will end in failure)
+    inflation_radius: 0.2 # 收窄膨胀，放松安全距离, 全局规划时base_footprint与障碍物保持的最小距离, 小于此值则规划失败(not greater than robot_radius. Minimum distance between base_footprint and obstacle during global planning. When it is smaller than this value, planning will end in failure)
     cost_scaling_factor: 1.0 # 代价比例系数，越大则代价值越小, cost_scaling_factor越大占用的计算量越小(cost ratio factor. The greater the value, the less the cost)
   virtual_wall:
     map_frame: "map"

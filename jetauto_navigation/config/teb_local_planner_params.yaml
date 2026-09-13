@@ -15,29 +15,30 @@ TebLocalPlannerROS:
   publish_feedback: true
 
   # Robot 机器人配置参数(Robot configuration parameter)
-  max_vel_x: 0.2  # 0.15 X方向最大速度(maximum velocity in X direction)
-  max_vel_y: 0.0  #16.25   # 差速轮机器人无Y方向速度，取0 (Maximum strafing velocity of the robot. Should be zero for differential wheel robots!)#########################################################
-  max_vel_x_backwards: 0.1 # 0.15 向后行驶时机器人的最大绝对平移速度（以米/秒为单位）(Maximum absolute translational velocity of the robot while driving backwards in meters/sec)
+  max_vel_x: 0.15 # 领航直行速度（follower 上限 0.18 > 0.15，两列不会被拉断）(maximum velocity in X direction)
+  max_vel_y: 0.15  # 厂家值：允许横移（与 move_base.launch omni 块一致） (Maximum strafing velocity of the robot. Should be zero for differential wheel robots!)#########################################################
+  max_vel_x_backwards: 0.08 向后行驶时机器人的最大绝对平移速度（以米/秒为单位）(Maximum absolute translational velocity of the robot while driving backwards in meters/sec)
   max_vel_theta: 0.3  # 0.3 允许的最大旋转速度，单位为弧度/秒(Maximum rotation velocity in rad/s)
   acc_lim_x: 0.2  # X方向最大线加速度(maximum linear acceleration in x direction)
-  acc_lim_y: 0.0 # 差速轮机器人无Y方向线加速度，取0 (Maximum strafing acceleration of the robot. Should be zero for Differential wheel robots!)#####################################################
+  acc_lim_y: 0.15 # 厂家值 (Maximum strafing acceleration of the robot. Should be zero for Differential wheel robots!)#####################################################
   acc_lim_theta: 0.3 # 0.15 最大角加速度(maximum angular acceleration)
   min_turning_radius: 0 # 类车机器人的最小转弯半径（差速驱动机器人设置为零(Minimum turning radius of a carlike robot (set to zero for a diff-drive robot))
   wheelbase: 0.213
+  holonomic_robot: False # 厂家值：非完整假设+弱约束，车头直行由 yaw_goal_tolerance 0.1 保证
     # 指定用于优化的机器人足迹模型类型。不同的类型是“点”、“圆形”、“线”、“two_circles”和“多边形”。模型的类型显着影响所需的计算时间(specify the type of robot trajectory model used for optimization, inluding "point", "circle", "line", "two_circles" and "polygon". The model type has great influence on the time spent on calculation)
   footprint_model: # types: "point", "circular", "two_circles", "line", "polygon"
-    type: "point"
+    type: "polygon"
 #    radius: 0.1 # for type "circular"
-#    vertices: [[-0.17, -0.13], [-0.17, 0.13],[0.17, 0.13], [0.17, -0.13]]
+    vertices: [[-0.17, -0.13], [-0.17, 0.13],[0.17, 0.13], [0.17, -0.13]]
 
   # GoalTolerance 目标容差参数(goal tolerance parameter)
   xy_goal_tolerance: 0.04 # 到目标位置的允许最终欧几里德距离（以米为单位(Allowed final euclidean distance to the goal position in meters)
-  yaw_goal_tolerance: 0.4 # 允许的最终方向误差（以弧度为单位）(Allowed final orientation error in radians)
+  yaw_goal_tolerance: 0.1 # 允许的最终方向误差（以弧度为单位，收紧以保持车头直行）(Allowed final orientation error in radians)
   free_goal_vel: false # 去除目标速度约束，使机器人能够以最大速度到达目标(Remove the goal velocity constraint such that the robot can arrive at the goal with maximum speed)
 
   # Obstacles 障碍物参数(obstacle parameters)
   # footprint_model(内切圆半径)+min_obstacle_dist需要大于通用配置文件中的footprint(内切圆半径)，但是不建议大太多，否则影响全局路径规划
-  min_obstacle_dist: 0.13 # 局部规划时base_footprint与障碍物的最小期望距离（以米为单位）(Minimum desired separation between base_footprint and obstacle in meters)
+  min_obstacle_dist: 0.08 # 放松安全距离：编队内间隙小，避免局部规划被卡死（以米为单位）(Minimum desired separation between base_footprint and obstacle in meters)
   inflation_dist: 0.0
   include_costmap_obstacles: True # 指定是否应考虑本地成本图的障碍。每个标记为障碍物的单元格都被视为一个点障碍物。因此，不要选择非常小的成本图分辨率，因为它会增加计算时间(Specify if obstacles of the local costmap should be taken into account. Each cell that is marked as obstacle is considered as a point-obstacle. Therefore do not choose a very small resolution of the costmap since it increases computation time.)
   costmap_obstacles_behind_robot_dist: 1.5 # 限制在机器人后面进行规划时考虑的占用的本地成本地图障碍（以米为单位指定距离）(Limit the occupied local costmap obstacles taken into account for planning behind the robot (specify distance in meters).)
@@ -54,12 +55,12 @@ TebLocalPlannerROS:
   optimization_verbose: False
   penalty_epsilon: 0.05 # 为硬约束近似的惩罚函数添加一个小的安全余量(Add a small safety margin to penalty functions for hard-constraint approximations)
   weight_max_vel_x: 1 # 满足最大允许平移速度的优化权重(Optimization weight for satisfying the maximum allowed translational velocity)
-  weight_max_vel_y: 0 #1                #差速导航注释掉此行(comment this line of code for differential navigation) ################################################
+  weight_max_vel_y: 1 # 厂家值(comment this line of code for differential navigation) ################################################
   weight_max_vel_theta: 1
   weight_acc_lim_x: 1
-  weight_acc_lim_y: 0 #1                #差速导航注释掉此行(comment this line of code for differential navigation) ################################################
+  weight_acc_lim_y: 1 # 厂家值(comment this line of code for differential navigation) ################################################
   weight_acc_lim_theta: 1
-  weight_kinematics_nh: 1000  # 满足非完整运动学的优化权重（此参数必须很高，因为运动学方程构成等式约束，即使值 1000 也不意味着由于与其他成本相比较小的“原始”成本值而导致矩阵条件不佳）(Optimization weight for satisfying the non-holonomic kinematics (this parameter must be high since the kinematics equation constitutes an equality constraint, even a value of 1000 does not imply a bad matrix condition due to small 'raw' cost values in comparison to other costs).)
+  weight_kinematics_nh: 3  # 温和非完整约束：双列直行时领航车头贴路径切线（1=斜行，1000=卡死）（此参数必须很高，因为运动学方程构成等式约束，即使值 1000 也不意味着由于与其他成本相比较小的“原始”成本值而导致矩阵条件不佳）(Optimization weight for satisfying the non-holonomic kinematics (this parameter must be high since the kinematics equation constitutes an equality constraint, even a value of 1000 does not imply a bad matrix condition due to small 'raw' cost values in comparison to other costs).)
   weight_kinematics_forward_drive: 1 # 强制机器人仅选择前向（正平移速度）的优化权重。较小的重量（例如 1.0）仍然允许向后行驶。1000 左右的值几乎可以防止向后行驶（但不能保证）。(Optimization weight for forcing the robot to choose only forward directions (positive transl. velocities). A small weight (e.g. 1.0) still allows driving backwards. A value around 1000 almost prevents backward driving (but cannot be guaranteed))
   weight_kinematics_turning_radius: 1 # 执行最小转弯半径的优化权重（仅适用于类车机器人）。(Optimization weight for enforcing a minimum turning radius (only for carlike robots).)
   weight_optimaltime: 1 # 用于收缩轨迹 wrt 转换/执行时间的优化权重(Optimization weight for contracting the trajectory wrt transition/execution time)

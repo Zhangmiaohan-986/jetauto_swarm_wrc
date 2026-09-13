@@ -1,0 +1,14 @@
+# Current six-robot vendor-omni TEB baseline.
+# Per-robot runtime values are injected by the public real/sim launch files.
+max_vel_x: 0.10
+max_vel_y: 0.10
+max_vel_x_backwards: 0.10
+max_vel_theta: 0.08
+acc_lim_x: 0.10
+acc_lim_y: 0.10
+acc_lim_theta: 0.15
+yaw_goal_tolerance: 0.05
+global_plan_overwrite_orientation: false
+allow_init_with_backwards_motion: true
+weight_kinematics_forward_drive: 0.0
+weight_viapoint: 10

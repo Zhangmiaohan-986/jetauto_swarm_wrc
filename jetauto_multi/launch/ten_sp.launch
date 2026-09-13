@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<launch>
+  <arg name="simulation" default="false"/>
+  <arg name="profile" default="$(find jetauto_multi)/config/fleet_vendor_omni/profiles/fleet10_same_map/profile.yaml"/>
+  <arg name="motion_enabled" default="false"/>
+  <arg name="allow_full_run" default="false"/>
+  <arg name="record_data" default="true"/>
+  <arg name="gui" default="true"/>
+  <arg name="map_yaml" default=""/>
+  <arg name="excluded_robots" default=""/>
+
+  <include unless="$(arg simulation)" file="$(find jetauto_multi)/launch/ten_real.launch">
+    <arg name="profile" value="$(arg profile)"/>
+    <arg name="motion_enabled" value="$(arg motion_enabled)"/>
+    <arg name="allow_full_run" value="$(arg allow_full_run)"/>
+    <arg name="record_data" value="$(arg record_data)"/>
+    <arg name="gui" value="$(arg gui)"/>
+    <arg name="map_yaml" value="$(arg map_yaml)"/>
+    <arg name="excluded_robots" value="$(arg excluded_robots)"/>
+    <arg name="sp_direction_guard_enabled" value="false"/>
+  </include>
+  <include if="$(arg simulation)" file="$(find jetauto_multi)/launch/ten_sim.launch">
+    <arg name="profile" value="$(arg profile)"/>
+    <arg name="motion_enabled" value="$(arg motion_enabled)"/>
+    <arg name="allow_full_run" value="$(arg allow_full_run)"/>
+    <arg name="record_data" value="$(arg record_data)"/>
+    <arg name="gui" value="$(arg gui)"/>
+    <arg name="map_yaml" value="$(arg map_yaml)"/>
+    <arg name="excluded_robots" value="$(arg excluded_robots)"/>
+    <arg name="sp_direction_guard_enabled" value="false"/>
+  </include>
+</launch>

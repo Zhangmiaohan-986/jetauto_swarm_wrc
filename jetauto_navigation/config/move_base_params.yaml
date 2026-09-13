@@ -14,12 +14,12 @@ planner_frequency: 5.0 # 全局规划操作的执行频率.如果设置为 0.0,�
 planner_patience: 10.0 # 全局规划时间，超时则认为失败(time spent on global planning. If it times out, global planning ends in failure)
 
 oscillation_timeout: 15.0 # 执行修复机制前,允许振荡的时长(how long in seconds to allow for oscillation before executing recovery behaviors)
-oscillation_distance: 0.03 # 配合timeout的含义就是，5s内超过0.1m范围内的运动才不算陷入局部震荡，如果不符则说明全局路径规划失败，将执行恢复(How far in meters the robot must move to be considered not to be oscillating. Moving this far resets the timer counting up to oscillation_timeout)
+oscillation_distance: 0.08 # 放宽：收尾原地转正姿态时的小幅位置抖动不再误判为震荡 放宽：原地小幅度姿态调整（对齐车头）不应被判为震荡 配合timeout的含义就是，5s内超过0.1m范围内的运动才不算陷入局部震荡，如果不符则说明全局路径规划失败，将执行恢复(How far in meters the robot must move to be considered not to be oscillating. Moving this far resets the timer counting up to oscillation_timeout)
 
 max_planning_retries: 1 # 在执行恢复行为之前允许计划重试多少次。值-1.0对应于无限重试（即全局规划失败后立刻执行）。(How many times to allow for planning retries before executing recovery behaviors. A value of -1.0 corresponds to an infinite retries)
 
 recovery_behavior_enabled: true # 是否启用move_base恢复行为以尝试清理空间(whether to enable move_base recovery behavior to attempt to clear out space)
-clearing_rotation_allowed: true # 确定机器人在尝试清理空间时是否会尝试就地旋转。注意：此参数仅在使用默认恢复行为时使用(Determines whether or not the robot will attempt an in-place rotation when attempting to clear out space. Note: This parameter is only used when the default recovery behaviors are in use.)
+clearing_rotation_allowed: false # 确定机器人在尝试清理空间时是否会尝试就地旋转。注意：此参数仅在使用默认恢复行为时使用(Determines whether or not the robot will attempt an in-place rotation when attempting to clear out space. Note: This parameter is only used when the default recovery behaviors are in use.)
 
 # 当move_base未能按照指定的顺序找到有效计划时，将运行这些行为。在每个行为完成后，move_base将尝试制定计划。(These behaviors will be executed when move_base fails to find the effective plan according to the designated order. move_base will attempt to make a plan after each behavior completes)
 # 如果规划成功，move_base将继续正常运行。否则，将执行列表中的下一个恢复行为(If planning is successful, move_base will continue normal operation. Otherwise, the next recovery behavior in the list will be executed.)
@@ -30,8 +30,8 @@ recovery_behaviors:
   #  type: 'clear_costmap_recovery/ClearCostmapRecovery'
   #- name: 'super_reset'
   #  type: 'clear_costmap_recovery/ClearCostmapRecovery'
-  - name: 'clearing_rotation'
-    type: 'rotate_recovery/RotateRecovery'
+  # - name: 'clearing_rotation'
+  #   type: 'rotate_recovery/RotateRecovery'
   #- name: 'move_slow_and_clear'
     #type: 'move_slow_and_clear/MoveSlowAndClear'
 

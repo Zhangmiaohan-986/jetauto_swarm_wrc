@@ -1,0 +1,91 @@
+# Editable geometry source. plan_profile.py generates mission.yaml from this.
+baseline: config/fleet_vendor_omni/six_robot_demo.yaml
+map_yaml: maps/realmap_obstacle/robot_1_obstacle_20260901_v3/robot_1_obstacle_20260901_v3.yaml
+map_frame: robot_1/map
+robot_order: [robot_1, robot_2, robot_3, robot_4, robot_5, robot_6, robot_7, robot_8, robot_9, robot_10]
+robots:
+  robot_1: {initial_x: -0.043, initial_y: 1.3584, initial_yaw_deg: -3.21}
+  robot_2: {initial_x: -0.043, initial_y: 0.887, initial_yaw_deg: -3.21}
+  robot_3: {initial_x: -0.139, initial_y: 0.109, initial_yaw_deg: -3.21}
+  robot_4: {initial_x: -0.190, initial_y: -0.625, initial_yaw_deg: -3.21}
+  robot_5: {initial_x: -0.190, initial_y: -1.0964, initial_yaw_deg: -3.21}
+  robot_6: {initial_x: -0.967, initial_y: 1.4114, initial_yaw_deg: -3.21}
+  robot_7: {initial_x: -0.967, initial_y: 0.940, initial_yaw_deg: -3.21}
+  robot_8: {initial_x: -1.014, initial_y: 0.222, initial_yaw_deg: -3.21}
+  robot_9: {initial_x: -1.114, initial_y: -0.612, initial_yaw_deg: -3.21}
+  robot_10: {initial_x: -1.114, initial_y: -1.0834, initial_yaw_deg: -3.21}
+planning:
+  transition_scheduler: progress_gates
+  # Milestones are reservation geometry, NOT a separate TEB goal every 10cm.
+  gate_step: 0.10
+  release_margin: 0.10
+  # 0.20m body enclosing radius + vendor TEB 0.13m obstacle preference.
+  wall_radius: 0.34
+  parked_clearance: 0.55
+  route_reservation: 0.65
+  # Actual parked-pose check = runtime minimum 0.42 + moving tracking 0.08.
+  # Keep 0.55 for nominal parked poses: includes 0.05m placement allowance.
+  tracking_error: 0.08
+  # Brief misses pause/replan one robot.  Actual 0.42m teammate clearance stays hard.
+  tracking_error_hard: 0.10
+  tracking_error_hold: 2.0
+  tracking_recovery_wait: 1.0
+  entry_tolerance: 0.025
+  # Control to 2.5cm; release at 3.5cm so localization noise cannot flip success to failure.
+  entry_release_tolerance: 0.035
+  min_teb_distance: 0.25
+  # Hold commands during a short VM ingress gap and resume from measured route progress.
+  transition_sensor_recovery_timeout: 8.0
+  # One transient TEB ABORTED is local to that robot. Keep its reservation and
+  # retry the same admitted goal before escalating to a stage hold.
+  teb_abort_max_retries: 3
+  teb_abort_retry_delay: 1.5
+  teb_abort_timeout: 18.0
+  # Inspect the first non-zero TEB command in map coordinates. A command with
+  # no forward component is cancelled before it can leave the reserved route.
+  teb_direction_min_speed: 0.01
+  teb_direction_min_cosine: 0.0
+  # Re-enter at one nearby route node with the existing certified connector.
+  route_recovery_advance: 0.12
+  route_recovery_timeout: 8.0
+  # A certified short connector waits locally for a continuously clear window.
+  connector_recheck_period: 0.20
+  connector_clear_stable: 0.50
+  connector_block_timeout: 20.0
+  connector_motion_timeout: 20.0
+  dependency_deadlock_timeout: 8.0
+phases:
+  - name: ROW_FORWARD
+    mode: formation_line
+    layout: rows
+    row_x: [0.90, 0.0]
+    # Small outward expansion before a 0.50m-goal-clearance stage.
+    outer_spacing: 0.60
+    timeout: 100.0
+  - name: TO_COLUMNS
+    placement_order: rear_first
+    mode: transition
+    layout: columns
+    front_x: 1.30
+    lane_y: [0.35, -0.25]
+    spacing: 0.60
+    timeout: 300.0
+  - name: COLUMN_FORWARD
+    mode: formation_line
+    layout: translate
+    delta: [1.65, 0.0]
+    timeout: 100.0
+  - name: TO_V_PAIRS
+    placement_order: front_first
+    mode: transition
+    layout: v_pairs
+    front_x: 4.20
+    lane_y: [1.55, -1.80]
+    row_dx: 0.70
+    row_dy: [0.28, 0.30]
+    timeout: 360.0
+  - name: TRIANGLE_FORWARD
+    mode: formation_line
+    layout: translate
+    delta: [1.0, 0.0]
+    timeout: 100.0

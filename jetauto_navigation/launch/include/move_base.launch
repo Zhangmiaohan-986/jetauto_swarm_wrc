@@ -3,8 +3,16 @@
     <arg name="sim"             default="false" />
     <arg name="use_teb"         default="true" />
     <arg name="robot_type"      default="$(env MACHINE_TYPE)"/>
-    <arg name="drive_type"      default="diff-corrected"/>
-    <arg name="cmd_vel_topic"   default="jetauto_controller/cmd_vel" />
+    <arg name="drive_type"      default="omni"/>
+    <!--
+        move_base 只输出导航控制意图。
+        在 robot_i namespace 下，该相对话题会解析为：
+        /robot_i/nav/cmd_vel
+
+        最终底盘 /robot_i/jetauto_controller/cmd_vel
+        只允许 safety_controller 发布。
+    -->
+    <arg name="cmd_vel_topic"   default="nav/cmd_vel" />
 
     <arg name="global_costmap_map_topic"        default="map"/>
     <arg name="global_costmap_sensor_frame"     default="base_footprint"/>
@@ -24,6 +32,22 @@
 
     <arg name="teb_odom_topic"      default="odom"/>
     <arg name="teb_map_frame"       default="odom"/>
+    <!-- Backward-compatible TEB kinematics switches. Mecanum experiments may
+         enable holonomic motion while retaining a weak non-holonomic weight
+         to stop the optimized body yaw from drifting during straight travel. -->
+    <arg name="teb_holonomic_robot" default="false"/>
+    <arg name="teb_weight_kinematics_nh" default="3.0"/>
+    <arg name="teb_xy_goal_tolerance" default="0.04"/>
+    <arg name="oscillation_timeout" default="15.0"/>
+    <!-- Defaults preserve the Gazebo-accepted behavior.  Real-robot launch
+         files override these limits without maintaining a second planner. -->
+    <arg name="teb_max_vel_x" default="0.15"/>
+    <arg name="teb_max_vel_y" default="0.15"/>
+    <arg name="teb_max_vel_x_backwards" default="0.08"/>
+    <arg name="teb_max_vel_theta" default="0.30"/>
+    <arg name="teb_acc_lim_x" default="0.20"/>
+    <arg name="teb_acc_lim_y" default="0.15"/>
+    <arg name="teb_penalty_epsilon" default="0.05"/>
 
     <!-- move_base -->
     <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
@@ -35,6 +59,7 @@
 
         <!--move_base基础参数-->
         <rosparam file="$(find jetauto_navigation)/config/move_base_params.yaml"  command="load"/>
+        <param name="oscillation_timeout" value="$(arg oscillation_timeout)"/>
 
         <!--全局规划-->
         <rosparam file="$(find jetauto_navigation)/config/base_global_planner_param.yaml"  command="load"/>
@@ -66,15 +91,22 @@
         <param unless="$(arg use_teb)" name="base_local_planner"            value="dwa_local_planner/DWAPlannerROS"/>
         <param unless="$(arg use_teb)" name="DWAPlannerROS/global_frame_id" value="$(arg dwa_global_frame)"/>
 
-        <param if="$(eval use_teb and drive_type == 'omni')"  name="TebLocalPlannerROS/max_vel_x"               value="0.15"/>
-        <param if="$(eval use_teb and drive_type == 'omni')"  name="TebLocalPlannerROS/max_vel_y"               value="0.15"/>
-        <param if="$(eval use_teb and drive_type == 'omni')"  name="TebLocalPlannerROS/max_vel_x_backwards"     value="0.15"/>
-        <param if="$(eval use_teb and drive_type == 'omni')"  name="TebLocalPlannerROS/max_vel_theta"           value="0.15"/>
-        <param if="$(eval use_teb and drive_type == 'omni')"  name="TebLocalPlannerROS/acc_lim_x"               value="0.15"/>
-        <param if="$(eval use_teb and drive_type == 'omni')"  name="TebLocalPlannerROS/acc_lim_y"               value="0.15"/>
+        <!-- Legacy validated values keep nh=3. Dedicated mecanum launches may
+             set holonomic=true and nh=0 without changing the legacy default.
+             硬约束 nh=1000 会在斜线路径上让 TEB 无可行解（起点头向 vs 路径切线 vs 终点姿态冲突），
+             导致震荡/无计划。车头直行靠 yaw_goal_tolerance 0.1 收紧，不再依赖 nh 硬约束。 -->
+        <param if="$(eval use_teb and drive_type == 'omni')"  name="TebLocalPlannerROS/holonomic_robot"        value="$(arg teb_holonomic_robot)"/>
+        <param if="$(eval use_teb and drive_type == 'omni')"  name="TebLocalPlannerROS/max_vel_x"               value="$(arg teb_max_vel_x)"/>
+        <param if="$(eval use_teb and drive_type == 'omni')"  name="TebLocalPlannerROS/max_vel_y"               value="$(arg teb_max_vel_y)"/>
+        <param if="$(eval use_teb and drive_type == 'omni')"  name="TebLocalPlannerROS/max_vel_x_backwards"     value="$(arg teb_max_vel_x_backwards)"/>
+        <param if="$(eval use_teb and drive_type == 'omni')"  name="TebLocalPlannerROS/max_vel_theta"           value="$(arg teb_max_vel_theta)"/>
+        <param if="$(eval use_teb and drive_type == 'omni')"  name="TebLocalPlannerROS/acc_lim_x"               value="$(arg teb_acc_lim_x)"/>
+        <param if="$(eval use_teb and drive_type == 'omni')"  name="TebLocalPlannerROS/acc_lim_y"               value="$(arg teb_acc_lim_y)"/>
         <param if="$(eval use_teb and drive_type == 'omni')"  name="TebLocalPlannerROS/weight_max_vel_y"        value="1"/>
         <param if="$(eval use_teb and drive_type == 'omni')"  name="TebLocalPlannerROS/weight_acc_lim_y"        value="1"/>
-        <param if="$(eval use_teb and drive_type == 'omni')"  name="TebLocalPlannerROS/weight_kinematics_nh"    value="1"/>
+        <param if="$(eval use_teb and drive_type == 'omni')"  name="TebLocalPlannerROS/weight_kinematics_nh"    value="$(arg teb_weight_kinematics_nh)"/>
+        <param if="$(arg use_teb)" name="TebLocalPlannerROS/xy_goal_tolerance" value="$(arg teb_xy_goal_tolerance)"/>
+        <param if="$(arg use_teb)" name="TebLocalPlannerROS/penalty_epsilon" value="$(arg teb_penalty_epsilon)"/>
 
         <remap from="cmd_vel" to="$(arg cmd_vel_topic)"/>
     </node>

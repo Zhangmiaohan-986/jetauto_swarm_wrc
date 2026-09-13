@@ -1,0 +1,39 @@
+# Intentionally incomplete starter. Copy into profiles/<map_id>_<mission>/.
+# Replace the map, all ten initial poses and EVERY null anchor before generating.
+# Do not use this file to overwrite the accepted fleet10_same_map profile.
+baseline: config/fleet_vendor_omni/six_robot_demo.yaml
+map_yaml: maps/replace_me/replace_me.yaml
+map_frame: robot_1/map
+robot_order: [robot_1, robot_2, robot_3, robot_4, robot_5, robot_6, robot_7, robot_8, robot_9, robot_10]
+robots: {}  # robot_1: {initial_x: ..., initial_y: ..., initial_yaw_deg: ...}, etc.
+planning:
+  wall_radius: 0.34
+  parked_clearance: 0.55
+  route_reservation: 0.65
+  tracking_error: 0.12
+phases:
+  - name: FORM_DOUBLE_COLUMNS
+    mode: transition
+    layout: template
+    formation: double_column
+    anchor: null
+    rotation_deg: 0.0
+    scale: 1.0
+    timeout: 300.0
+  - name: FORM_SINGLE_BEFORE_NARROW
+    mode: transition
+    layout: template
+    formation: single_file
+    anchor: null
+    timeout: 300.0
+  - name: PASS_NARROW
+    mode: formation_line
+    layout: translate
+    delta: [1.0, 0.0]  # Replace distance; non +x motion requires transition mode.
+    timeout: 100.0
+  - name: FORM_TRIANGLE_AFTER_EXIT
+    mode: transition
+    layout: template
+    formation: triangle_10
+    anchor: null
+    timeout: 360.0
