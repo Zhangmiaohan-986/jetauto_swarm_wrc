@@ -40,8 +40,8 @@ printf '%s\\n' "$*" >> "$TEST_LOG"
     for action in ['stop', 'start', 'app-stop', 'status']:
         subprocess.run(['bash', str(admin/'manage_robot.sh'), '4', action], env=env, check=True)
     log = (root/'log').read_text()
-    assert '192.168.1.114' in log and 'fuse_imu_yaw:=false' in log
-    assert 'FLEET_IMU_BIAS_ESTIMATION=false' in log
+    assert '192.168.1.114' in log and 'fuse_imu_yaw:=true' in log
+    assert 'FLEET_IMU_BIAS_ESTIMATION=true' in log
     assert "iw dev wlan0 set power_save 'off' && iw dev wlan0 get power_save" in log
     assert 'exec roscore' not in log
     stop_pattern = re.search("pkill -INT -f '([^']+)'", log).group(1)
@@ -60,7 +60,7 @@ printf '%s\\n' "$*" >> "$TEST_LOG"
                    env=dict(env, FLEET_LOCAL_TF='true'), check=True)
     transport_log = (root/'log').read_text()[len(log):]
     assert 'scp ' in transport_log and 'robot_4_transport.launch.before_fleet4' in transport_log
-    assert 'exec roslaunch /home/jetauto/swarm_logs/robot_4_transport.launch robot_name:=robot_4 fuse_imu_yaw:=false' in transport_log
+    assert 'exec roslaunch /home/jetauto/swarm_logs/robot_4_transport.launch robot_name:=robot_4 fuse_imu_yaw:=true' in transport_log
     assert 'export FLEET_LOCAL_TF=true' in transport_log
     for args in [('0','stop'), ('11','start'), ('4','invalid')]:
         assert subprocess.run(['bash', str(admin/'manage_robot.sh'), *args], env=env).returncode != 0

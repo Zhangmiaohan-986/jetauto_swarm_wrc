@@ -172,8 +172,8 @@ stages:
     scheduler: progress_gates
     seed_order: shortest
     total_route_length: 9.504
-  entry_release_tolerance: 0.035
-  entry_tolerance: 0.025
+  entry_release_tolerance: 0.05
+  entry_tolerance: 0.04
   goals:
     robot_1:
       x: 0.7
@@ -862,8 +862,8 @@ stages:
     scheduler: progress_gates
     seed_order: front_first
     total_route_length: 23.578
-  entry_release_tolerance: 0.035
-  entry_tolerance: 0.025
+  entry_release_tolerance: 0.05
+  entry_tolerance: 0.04
   goals:
     robot_1:
       x: 3.5

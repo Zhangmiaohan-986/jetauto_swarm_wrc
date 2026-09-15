@@ -14,8 +14,8 @@
        the same amcl_pose and map->odom contract, so it disables this one
        node without changing move_base, TEB, topics, or TF names. -->
   <arg name="enable_amcl" default="true"/>
-  <arg name="fuse_imu_yaw" default="false"/>
-  <arg name="imu_bias_estimation" default="false"/>
+  <arg name="fuse_imu_yaw" default="true"/>
+  <arg name="imu_bias_estimation" default="true"/>
   <arg name="max_vel_x" default="0.06"/>
   <arg name="max_vel_y" default="0.06"/>
   <arg name="max_vel_x_backwards" default="0.06"/>
@@ -24,9 +24,9 @@
   <arg name="acc_lim_y" default="0.10"/>
   <arg name="acc_lim_theta" default="0.15"/>
   <arg name="amcl_update_min_d" default="0.01"/>
-  <arg name="amcl_update_min_a" default="0.10"/>
-  <arg name="amcl_recovery_alpha_slow" default="0.0"/>
-  <arg name="amcl_recovery_alpha_fast" default="0.0"/>
+  <arg name="amcl_update_min_a" default="0.02"/>
+  <arg name="amcl_recovery_alpha_slow" default="0.001"/>
+  <arg name="amcl_recovery_alpha_fast" default="0.05"/>
 
   <arg name="use_transition_via_points" default="false"/>
   <arg name="transition_via_weight" default="10.0"/>

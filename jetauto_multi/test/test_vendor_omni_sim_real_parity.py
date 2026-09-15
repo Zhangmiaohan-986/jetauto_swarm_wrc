@@ -31,7 +31,7 @@ class ProfileContract(unittest.TestCase):
                     self.assertEqual('robot_%d'%index,a['robot_name'])
                     self.assertEqual('false' if sim else 'true',a.pop('enable_amcl'))
                     self.assertEqual('0.1',a['max_vel_x'])
-                    self.assertEqual('false',a['imu_bias_estimation'])
+                    self.assertEqual('false' if relative=='six_robot_profile.yaml' else 'true',a['imu_bias_estimation'])
                     self.assertEqual('true' if gated else 'false',a['use_transition_via_points'])
                 navigation.append(args)
                 types=[node.get('type') for node in root.findall('node')]

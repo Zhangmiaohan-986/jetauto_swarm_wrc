@@ -30,9 +30,9 @@ planning:
   tracking_error_hard: 0.10
   tracking_error_hold: 2.0
   tracking_recovery_wait: 1.0
-  entry_tolerance: 0.025
-  # Control to 2.5cm; release at 3.5cm so localization noise cannot flip success to failure.
-  entry_release_tolerance: 0.035
+  entry_tolerance: 0.04
+  # Control to 4cm; release at 5cm so localization noise cannot flip success to failure.
+  entry_release_tolerance: 0.05
   min_teb_distance: 0.25
   # Hold commands during a short VM ingress gap and resume from measured route progress.
   transition_sensor_recovery_timeout: 8.0
